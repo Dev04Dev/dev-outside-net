@@ -1,0 +1,30 @@
+#tool-bar {
+    background-color: #313131;
+    border: none;
+    spacing: 10px;
+    padding: 4px 4px;
+}
+#tool-bar QToolButton {
+    padding: 2px;
+    border:none;
+}
+#tool-bar QToolButton:checked{border-left: 2px solid #ffffff;}
+
+#tool-bar QToolButton:hover {margin: 2px;}
+
+QStatusBar QSizeGrip,
+#status-bar QSizeGrip {
+    image: none;
+    width: 12px;
+}
+
+#status-bar {
+    background: #383838;
+}
+
+#start-btn {
+    color:#eee;
+    background: #4287f5;
+    border-radius: 3px;
+    padding: 2px 6px;
+}
