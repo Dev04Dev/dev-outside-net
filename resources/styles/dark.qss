@@ -1,3 +1,12 @@
+QSplitter::handle {background-color:transparent}
+
+QSplitter::handle:horizontal {width: 1px}
+
+QSplitter::handle:vertical {height: 1px}
+
+QSplitter::handle:pressed {background-color:#00a2e8}
+
+
 #tool-bar {
     background-color: #313131;
     border: none;

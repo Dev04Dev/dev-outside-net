@@ -1,10 +1,11 @@
 import frameworks.qtmodern.styles as qtmodern_styles
 import frameworks.qtmodern.windows as qtmodern_windows
-from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QListWidget, QMainWindow, QPushButton, QSizePolicy, QSplitter, QStackedLayout, QTabWidget, QWidget,
+from PyQt5.QtWidgets import (QComboBox, QFormLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QMainWindow, QPushButton, QSizePolicy, QSplitter, QStackedLayout, QTabWidget, QTreeWidget, QWidget,
                             QVBoxLayout, QFrame,
                             QDesktopWidget, QStatusBar,
                             QToolBar, QSizePolicy,
                             QAction)
+import functions
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
@@ -14,7 +15,14 @@ class StatusBar(QStatusBar):
     def __init__(self, parent=None) -> None:
         super().__init__(parent=parent)
         self.setObjectName("status-bar")
+        
         self.up=parent
+        
+        self.zoom_in = QPushButton("+")
+        self.zoom_out = QPushButton("-")
+        
+        self.addPermanentWidget(self.zoom_out)
+        self.addPermanentWidget(self.zoom_in)
 
 class ToolBar(QToolBar):
     def __init__(self, parent:object) -> None:
@@ -22,6 +30,7 @@ class ToolBar(QToolBar):
         self.setObjectName("tool-bar")
         self.up=parent
         self.actions_list = []
+        self.icons = functions.get_icons()
         self.init_ui()
     
     def init_ui(self) -> None:
@@ -32,17 +41,17 @@ class ToolBar(QToolBar):
         self.spacing=QWidget(self)
         self.spacing.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
         
-        self.search=QAction(QIcon("resources/icons/dark/search.png") , "Search", self)
+        self.search=QAction(self.icons["search"] , "Search", self)
         self.search.setToolTip("Pesquisar")
         self.addAction(self.search)
         
-        self.list=QAction(QIcon("resources/icons/dark/list.png") , "Search", self)
+        self.list=QAction(self.icons["list"] , "Search", self)
         self.list.setToolTip("Tópicos")
         self.addAction(self.list)
         
         self.addWidget(self.spacing)
         
-        self.settings=QAction(QIcon("resources/icons/dark/settings.png") , "Search", self)
+        self.settings=QAction(self.icons["config"] , "Search", self)
         self.settings.setToolTip("Configurações")
         self.addAction(self.settings)
 
@@ -51,6 +60,7 @@ class Index(QFrame):
         super().__init__(parent=parent)
         self.setObjectName("index-screen")
         self.up=parent
+        self.icons = functions.get_icons()
         
         self.init_ui()
     
@@ -59,13 +69,13 @@ class Index(QFrame):
         self.box.setContentsMargins(0, 10, 0, 10)
         self.setLayout(self.box)
                 
-        self.svg_widget = QSvgWidget("resources/icons/index.svg")
+        self.svg_widget = QSvgWidget(self.icons["index"])
         
         self.btn_start = QPushButton("Start", self)
         self.btn_start.setObjectName("start-btn")
         
         self.hello = QLabel(self)
-        self.hello.setText("<h2><nobr>O lugar onde você encontra respostas fora da internet</nobr></h2>")
+        self.hello.setText("<h2><nobr>Encontra respostas fora da internet</nobr></h2>")
         self.hello.setAlignment(Qt.AlignTop)
         self.hello.setScaledContents(True)
         self.hello.setWordWrap(True)
@@ -82,25 +92,57 @@ class Settings(QFrame):
         super().__init__(parent=parent)
         self.setObjectName("settings-frame")
         self.up=parent
+        self.icons = functions.get_icons()
         
         self.init_ui()
     
     def init_ui(self):
         self.box = QVBoxLayout(self)
         self.setLayout(self.box)
+        self.box.setAlignment(Qt.AlignTop)
         
         self.info = QLabel(self)
         self.info.setText("<small>Settings</small>")
         hbox = QHBoxLayout()
         hbox.addWidget(self.info)
         
+        self.form_box = QFormLayout()
+        
+        combobox_size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        
+        self.theme_choice = QComboBox(self)
+        self.theme_choice.setSizePolicy(combobox_size_policy)
+        self.theme_choice.addItem(self.icons["dark"], "Dark")
+        self.theme_choice.addItem(self.icons["light"], "Light")
+        
+        self.icons_choice = QComboBox(self)
+        self.icons_choice.setSizePolicy(combobox_size_policy)
+        self.icons_choice.addItem(self.icons["dark"], "Dark")
+        self.icons_choice.addItem(self.icons["light"], "Light")
+        
+        self.qpalette_choice = QComboBox(self)
+        self.qpalette_choice.setSizePolicy(combobox_size_policy)
+        self.qpalette_choice.addItem(self.icons["dark"], "Dark")
+        self.qpalette_choice.addItem(self.icons["light"], "Light")
+        
+        self.theme_label = QLabel("<h3> Tema <h3>", self)
+        
+        self.form_box.addRow("Aplicação", self.theme_choice)
+        self.form_box.addRow("ícones", self.icons_choice)
+        self.form_box.addRow("Qt", self.qpalette_choice)
+        
         self.box.addLayout(hbox)
+        self.box.addSpacing(20)
+        self.box.addWidget(self.theme_label)
+        self.box.addLayout(self.form_box)
+        
 
 class Search(QFrame):
     def __init__(self, parent=None) -> None:
         super().__init__(parent=parent)
         self.setObjectName("search-frame")
         self.up=parent
+        self.icons = functions.get_icons()
         
         self.init_ui()
     
@@ -125,6 +167,7 @@ class Topics(QFrame):
         super().__init__(parent=parent)
         self.setObjectName("topics-frame")
         self.up=parent
+        self.icons = functions.get_icons()
         
         self.init_ui()
     
@@ -137,17 +180,26 @@ class Topics(QFrame):
         hbox = QHBoxLayout()
         hbox.addWidget(self.info)
         
-        self.list = QListWidget(self)
+        self.tree = QTreeWidget(self)
         
         self.box.addLayout(hbox)
-        self.box.addWidget(self.list)
+        self.box.addWidget(self.tree)
+    
+    def set_topics(self, topics:list):
+        if topics:
+            self.list.clear()
+            
+            for topic in topics:
+                print(topic)
 
 class SideLeft(QFrame):
     def __init__(self, parent:object) -> None: 
         super().__init__(parent)
         self.up = parent
+        self.icons = functions.get_icons()
         
         self.box = QStackedLayout(self)
+        self.box.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.box)
         
         self.search = Search(self)
@@ -185,6 +237,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.icons = functions.get_icons()
         
         self.frame = None
         
@@ -197,8 +250,12 @@ class MainWindow(QMainWindow):
         self.div = QSplitter(Qt.Horizontal, self)
         
         self.side_left = SideLeft(self)
+        
         self.index = Index(self)
+        
         self.notebook = QTabWidget(self)
+        self.notebook.setTabsClosable(True)
+        self.notebook.setDocumentMode(True)
         
         a = QLabel("BBBBBBBBBBBBBBBBBBBBBB")
         self.notebook.addTab(a, "Example")
@@ -214,11 +271,12 @@ class MainWindow(QMainWindow):
         self.make_window()
     
     def make_window(self):
+        self.setMinimumSize(100, 100)
         self.setGeometry(0, 0, 1000, 600)
         self.setWindowTitle("Dewithoutnet")
         self.center()
         self.frame = qtmodern_windows.ModernWindow(self)
-        self.frame.setMenuIcon(QIcon("resources/logo/logo_small.png"))
+        self.frame.setMenuIcon(self.icons["logo_small"])
         self.frame.show()
         
     def center(self) -> None:
