@@ -1,15 +1,43 @@
 import frameworks.qtmodern.styles as qtmodern_styles
 import frameworks.qtmodern.windows as qtmodern_windows
-from PyQt5.QtWidgets import (QComboBox, QFormLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QMainWindow, QPushButton, QSizePolicy, QSplitter, QStackedLayout, QTabWidget, QTreeWidget, QWidget,
+from PyQt5.QtWidgets import (QComboBox, QFormLayout,
+                            QHBoxLayout, QLabel,
+                            QLineEdit, QListWidget,
+                            QMainWindow, QPushButton,
+                            QSizePolicy, QSplitter,
+                            QStackedLayout, QTabWidget,
+                            QTreeView, QWidget,
                             QVBoxLayout, QFrame,
                             QDesktopWidget, QStatusBar,
                             QToolBar, QSizePolicy,
-                            QAction)
+                            QAction, QListWidgetItem,
+                            QTextBrowser)
 import functions
 
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtSvg import QSvgWidget
+
+class ListWidgetItem(QListWidgetItem):
+    def __init__(self, text, tooltip=None, item_data=None) -> None:
+        super().__init__()
+        self.setText(text)
+        self.setToolTip(tooltip)
+        
+        self.item_data=item_data
+
+class StandardItem(QStandardItem):
+    def __init__(self) -> None:
+        super().__init__()
+        self._item_data = None
+        self.setEditable(False)
+    
+    @property
+    def item_data(self):
+        return self._item_data
+    
+    def set_data(self, data:dict):
+        self._item_data = data
 
 class StatusBar(QStatusBar):
     def __init__(self, parent=None) -> None:
@@ -65,6 +93,7 @@ class Index(QFrame):
         self.init_ui()
     
     def init_ui(self):
+        self.setMinimumWidth(300)
         self.box = QVBoxLayout(self)
         self.box.setContentsMargins(0, 10, 0, 10)
         self.setLayout(self.box)
@@ -161,6 +190,11 @@ class Search(QFrame):
         self.box.addLayout(hbox)
         self.box.addWidget(self.input)
         self.box.addWidget(self.output)
+    
+    def set_results(self, results):
+        self.output.clear()
+        for item in results:
+            self.output.addItem(item)
 
 class Topics(QFrame):
     def __init__(self, parent=None) -> None:
@@ -180,21 +214,23 @@ class Topics(QFrame):
         hbox = QHBoxLayout()
         hbox.addWidget(self.info)
         
-        self.tree = QTreeWidget(self)
+        self.tree = QTreeView(self)
+        self.model = QStandardItemModel(self)
+        self.tree.setModel(self.model)
+        self.tree.header().hide()
         
         self.box.addLayout(hbox)
         self.box.addWidget(self.tree)
     
-    def set_topics(self, topics:list):
-        if topics:
-            self.list.clear()
-            
-            for topic in topics:
-                print(topic)
+    def set_topics(self, topics):
+        self.model.clear()
+        for item in topics:
+            self.model.appendRow(item)
 
 class SideLeft(QFrame):
     def __init__(self, parent:object) -> None: 
         super().__init__(parent)
+        self.setObjectName("side-left")
         self.up = parent
         self.icons = functions.get_icons()
         
@@ -203,11 +239,11 @@ class SideLeft(QFrame):
         self.setLayout(self.box)
         
         self.search = Search(self)
-        self.list = Topics(self)
+        self.topics = Topics(self)
         self.config = Settings(self)
         
         self.box.addWidget(self.search)
-        self.box.addWidget(self.list)
+        self.box.addWidget(self.topics)
         self.box.addWidget(self.config)
         
         self.setVisible(False)
@@ -219,12 +255,12 @@ class SideLeft(QFrame):
             self.setVisible(True)
             self.box.setCurrentWidget(self.search)
     
-    def do_list(self):
-        if self.isVisible() and self.box.currentWidget() is self.list:
+    def do_tree(self):
+        if self.isVisible() and self.box.currentWidget() is self.topics:
             self.setVisible(False)
         else:
             self.setVisible(True)
-            self.box.setCurrentWidget(self.list)
+            self.box.setCurrentWidget(self.topics)
     
     def do_config(self):
         if self.isVisible() and self.box.currentWidget() is self.config:
@@ -252,24 +288,33 @@ class MainWindow(QMainWindow):
         self.side_left = SideLeft(self)
         
         self.index = Index(self)
+        self.index.setFocus()
         
         self.notebook = QTabWidget(self)
+        self.notebook.setMovable(True)
         self.notebook.setTabsClosable(True)
         self.notebook.setDocumentMode(True)
-        
-        a = QLabel("BBBBBBBBBBBBBBBBBBBBBB")
-        self.notebook.addTab(a, "Example")
         
         self.div.addWidget(self.side_left)
         self.div.addWidget(self.index)
         self.div.addWidget(self.notebook)
         
-        self.div.setSizes([30, 70, 0])
+        self.div.setSizes([30, 60, 60])
         
         self.setCentralWidget(self.div)
         
+        self.togle_views(0)
+        
         self.make_window()
     
+    def togle_views(self, idx:int):
+        if idx == 0:
+            self.index.setVisible(True)
+            self.notebook.setVisible(False)
+        else:
+            self.notebook.setVisible(True)
+            self.index.setVisible(False)
+            
     def make_window(self):
         self.setMinimumSize(100, 100)
         self.setGeometry(0, 0, 1000, 600)

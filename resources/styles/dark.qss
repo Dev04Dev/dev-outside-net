@@ -1,11 +1,127 @@
+QWidget:focus {
+    border: 1px solid rgb(42, 130, 218)
+}
+
+QComboBox {
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 1px 10px 1px 3px;
+    min-width: 6em;
+}
+
+QComboBox:editable {
+    background: white;
+}
+
+QComboBox:!editable, QComboBox::drop-down:editable {
+    background: #444;
+    color:#eee;
+}
+
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    background: #333
+}
+
+QComboBox:on {
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {image: url(resources/icons/light/combobox-down-arrow.png); width: 16; height: 16;}
+
+QComboBox::down-arrow:on {
+    top: 1px;
+    left: 1px;
+}
+
+QPushButton,
+QToolButton,
+QLineEdit {border-radius: 3px}
+QLineEdit {
+    padding: 4px;
+    background: #303030;
+}
+
 QSplitter::handle {background-color:transparent}
 
 QSplitter::handle:horizontal {width: 1px}
 
 QSplitter::handle:vertical {height: 1px}
 
-QSplitter::handle:pressed {background-color:#00a2e8}
 
+QListWidget,
+QTreeView {
+    background: #393939;
+    border-radius: 3px;
+    padding: 1px;
+}
+
+QTabWidget::pane {border:none}
+
+QTabBar{border:none}
+
+QTabBar::tab {
+    font-size: 10pt;
+    background-color: #2d2d2d;
+    padding: 5px;
+    margin-right: .5px;
+    color:#888888;
+}
+
+QTabBar::tab:selected {
+    background-color: #1e1e1e;
+    color:#ffffff;
+    border-top: 1px solid  #007acc;
+}
+QTabBar {qproperty-drawBase: 0;}
+
+QTabBar QToolButton {
+    border:none;
+    color:#eeeeee;
+    background-color: #0e639c;
+    margin-left:2px;
+}
+QTabBar QToolButton::right-arrow {image: url("<get_app_icons_path>right-arrow-tab.png");}
+
+QTabBar QToolButton::left-arrow {image: url("<get_app_icons_path>left-arrow-tab.png");}
+
+QTabWidget QTabBar::close-button {
+    image: url("<get_app_icons_path>close-tab.png");
+    border-radius: 4px;
+}
+QTabWidget QTabBar::close-button:hover{background-color: rgba(180, 180, 180, 70);}
+
+#titleBar {
+    background:#393939
+}
+
+QStatusBar,
+#status-bar {
+    border: none;
+    margin:0;
+    padding: 0;
+    background: #383838;
+}
+
+QStatusBar QPushButton,
+#status-bar QPushButton{
+    font-size: 9pt;
+    background-color: transparent;
+    color: #eee;
+    border: none;
+    padding: 0 4px;
+}
+QStatusBar QPushButton:hover,
+#status-bar QPushButton:hover{background-color: rgba(180, 180, 180, 70);}
 
 #tool-bar {
     background-color: #313131;
@@ -25,10 +141,6 @@ QStatusBar QSizeGrip,
 #status-bar QSizeGrip {
     image: none;
     width: 12px;
-}
-
-#status-bar {
-    background: #383838;
 }
 
 #start-btn {

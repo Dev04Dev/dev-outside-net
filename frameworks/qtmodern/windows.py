@@ -1,21 +1,11 @@
-from qtpy.QtCore import Qt, QMetaObject, Signal, Slot, QSize
-from qtpy.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton,
-                            QLabel, QSizePolicy)
-from ._utils import QT_VERSION, PLATFORM, resource_path
-
-
-_FL_STYLESHEET = resource_path('resources/frameless.qss')
-""" str: Frameless window stylesheet. """
-
+from PyQt5.QtCore import Qt, QMetaObject, pyqtSignal as Signal, pyqtSlot as Slot, QSize
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton,
+                            QLabel, QDesktopWidget, QSizePolicy)
+from ._utils import QT_VERSION, PLATFORM, _FL_STYLESHEET
 
 class WindowDragger(QWidget):
-    """ Window dragger.
-
-        Args:
-            window (QWidget): Associated window.
-            parent (QWidget, optional): Parent widget.
-    """
-
+    
+    dragMax = Signal()
     doubleClicked = Signal()
 
     def __init__(self, window, parent=None):
@@ -23,6 +13,8 @@ class WindowDragger(QWidget):
 
         self._window = window
         self._mousePressed = False
+        self.setCursor(Qt.ArrowCursor)
+        self.setAttribute(Qt.WA_StyledBackground, True)
 
     def mousePressEvent(self, event):
         self._mousePressed = True
@@ -31,33 +23,38 @@ class WindowDragger(QWidget):
 
     def mouseMoveEvent(self, event):
         if self._mousePressed:
+            self.setCursor(Qt.ClosedHandCursor)
+            self._window.on_btnRestore_clicked()
             self._window.move(self._windowPos +
                               (event.globalPos() - self._mousePos))
+            if self._window.pos().y() < 0:
+                self._mousePressed=False
+                self.setCursor(Qt.ArrowCursor)
+                self.dragMax.emit()
 
     def mouseReleaseEvent(self, event):
         self._mousePressed = False
+        self.setCursor(Qt.ArrowCursor)
 
     def mouseDoubleClickEvent(self, event):
         self.doubleClicked.emit()
 
 
 class ModernWindow(QWidget):
-    """ Modern window.
-
-        Args:
-            w (QWidget): Main widget.
-            parent (QWidget, optional): Parent widget.
-    """
 
     def __init__(self, w, parent=None):
         super().__init__(parent)
         self.setObjectName("modern-window")
-
+        
+        self.icon=None
         self._w = w
+        self.main_h_is_pressed=False
+        self.main_w_is_pressed=False
         self.setupUi()
 
         contentLayout = QHBoxLayout()
         contentLayout.setContentsMargins(0, 0, 0, 0)
+        contentLayout.setSpacing(0)
         contentLayout.addWidget(w)
 
         self.windowContent.setLayout(contentLayout)
@@ -65,20 +62,24 @@ class ModernWindow(QWidget):
         self.setWindowTitle(w.windowTitle())
         self.setGeometry(w.geometry())
 
-        # Adding attribute to clean up the parent window when the child is closed
         self._w.setAttribute(Qt.WA_DeleteOnClose, True)
         self._w.destroyed.connect(self.__child_was_closed)
 
+        self.border_radius=None
+
     def setupUi(self):
-        # create title bar, content
         self.vboxWindow = QVBoxLayout(self)
         self.vboxWindow.setContentsMargins(0, 0, 0, 0)
 
         self.windowFrame = QWidget(self)
+        self.windowFrame.mouseMoveEvent=self.on_main_move
+        self.windowFrame.mousePressEvent=self.on_main_press
+        self.windowFrame.mouseReleaseEvent=self.on_main_release
         self.windowFrame.setObjectName('windowFrame')
 
         self.vboxFrame = QVBoxLayout(self.windowFrame)
         self.vboxFrame.setContentsMargins(0, 0, 0, 0)
+        self.vboxFrame.setSpacing(0)
 
         self.titleBar = WindowDragger(self, self.windowFrame)
         self.titleBar.setObjectName('titleBar')
@@ -87,14 +88,13 @@ class ModernWindow(QWidget):
 
         self.hboxTitle = QHBoxLayout(self.titleBar)
         self.hboxTitle.setContentsMargins(0, 0, 0, 0)
-        self.hboxTitle.setSpacing(0)
 
         self.lblTitle = QLabel('Title')
         self.lblTitle.setObjectName('lblTitle')
         self.lblTitle.setAlignment(Qt.AlignCenter)
 
         spButtons = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        
+
         self.toolMenu=QToolButton(self.titleBar)
         self.toolMenu.setObjectName("btnMenu")
         self.toolMenu.setIconSize(QSize(20,20))
@@ -140,44 +140,44 @@ class ModernWindow(QWidget):
             self.hboxTitle.addWidget(self.btnMaximize)
             self.hboxTitle.addWidget(self.btnClose)
 
-        # set window flags
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowSystemMenuHint | Qt.WindowCloseButtonHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
 
-        #if QT_VERSION >= (5,):
-            #self.setAttribute(Qt.WA_TranslucentBackground)
-
-        # set stylesheet
-        with open(_FL_STYLESHEET) as stylesheet:
-            self.setStyleSheet(stylesheet.read())
-
+        self.setStyleSheet(_FL_STYLESHEET)
+    
         # automatically connect slots
         QMetaObject.connectSlotsByName(self)
 
-    def __child_was_closed(self):
+    def __child_was_closed(self) -> None:
         self._w = None  # The child was deleted, remove the reference to it and close the parent window
         self.close()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:
         if not self._w:
             event.accept()
         else:
             self._w.close()
             event.setAccepted(self._w.isHidden())
     
+    def center(self) -> None:
+        app_geo = self.frameGeometry()
+        screen_center = QDesktopWidget().availableGeometry().center()
+        app_geo.moveCenter(screen_center)
+        self.move(app_geo.topLeft())
+    
+    def set_window_title(self, title:str) -> None:
+        self.lblTitle.setText(title)
+        
     def setWindowMenu(self, menu) ->None:
         self.toolMenu.setMenu(menu)
+    
+    def setWindowIcon(self, icon) ->None:
+        self.icon=icon
     
     def setMenuIcon(self, icon) -> None:
         self.toolMenu.setIcon(icon)
 
-    def setWindowTitle(self, title):
-        """ Set window title.
-
-            Args:
-                title (str): Title.
-        """
-
+    def setWindowTitle(self, title) -> None:
         super(ModernWindow, self).setWindowTitle(title)
         self.lblTitle.setText(title)
 
@@ -224,14 +224,15 @@ class ModernWindow(QWidget):
         if Qt_WindowType in buttonHints:
             self._setWindowButtonState(Qt_WindowType, on)
         else:
-            QWidget.setWindowFlag(self, Qt_WindowType, on)
+            super().setWindowFlag(Qt_WindowType, on)
 
     def setWindowFlags(self, Qt_WindowFlags):
         buttonHints = [Qt.WindowCloseButtonHint, Qt.WindowMinimizeButtonHint, Qt.WindowMaximizeButtonHint]
         for hint in buttonHints:
             self._setWindowButtonState(hint, bool(Qt_WindowFlags & hint))
 
-        QWidget.setWindowFlags(self, Qt_WindowFlags)
+        super().setWindowFlags(Qt_WindowFlags)
+    
 
     @Slot()
     def on_btnMinimize_clicked(self):
@@ -269,6 +270,41 @@ class ModernWindow(QWidget):
             self.on_btnRestore_clicked()
     
     @Slot()
+    def on_titleBar_dragMax(self):
+        if not bool(self.windowState() & Qt.WindowMaximized):
+            self.on_btnMaximize_clicked()
+        else:
+            self.on_btnRestore_clicked()
+
+    @Slot()
     def on_toolMenu_clicked(self):
         self.toolMenu.showMenu()
+    
+    def on_main_move(self, event):
+        if self.main_w_is_pressed:
+            w=event.pos().x()
+            self.resize(w,self.geometry().height())
         
+        elif self.main_h_is_pressed:
+            h=event.pos().y()
+            self.resize(self.geometry().width(),h)
+
+    def on_main_press(self, event):
+        maximized = bool(self.windowState() & Qt.WindowMaximized)
+        if not maximized:
+        
+            w,h=event.pos().x(),event.pos().y()
+            
+            if self.geometry().height() - h < 10:
+                self.setCursor(Qt.SizeVerCursor)
+                self.main_h_is_pressed=True
+            
+            elif w <= 10 or self.geometry().width() - w < 10:
+                self.setCursor(Qt.SizeHorCursor)
+                self.main_w_is_pressed=True
+    
+    def on_main_release(self, event):
+        self.main_is_pressed=False
+        self.main_h_is_pressed=False
+        self.main_w_is_pressed=False
+        self.setCursor(Qt.ArrowCursor)
