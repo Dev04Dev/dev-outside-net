@@ -1,3 +1,5 @@
+![logo](/app/resources/logo/logo_normal.png)
+
 # dev-outside-net
 
 > Projecto criado para ajudar programadores iniciantes a estudar, apesar da falta de internet!
