@@ -1,3 +1,5 @@
+![logo](/resources/logo/logo_normal.png)
+
 # dev-outside-net
 
 > Projecto criado para ajudar programadores iniciantes a estudar, apesar da falta de internet!
@@ -26,6 +28,11 @@
 
 ## ScreenShots:
 
+![screen1](/resources/assets/screen1.png)
+![screen2](/resources/assets/screen2.png)
+![screen3](/resources/assets/screen3.png)
+![screen4](/resources/assets/screen4.png)
+
 ---
 
 ## Technical specifications:
@@ -53,7 +60,8 @@
 > mas enquanto isso você pode:
 
 1. Clonar este repositório, realizar testes e encontrar problemas!
-
+> Use:
+  `git clone https://github.com/Dev04Dev/dev-outside-net.git`
 2. Caso encontre algum problema ou note algum comportamento estranho na aplicação por favor crie uma *issue* (caso ainda não exista), e relate o problema!
 
 3. Deixar uma estrela neste *repo*, pois dá mais motivação ver que as pessoas se importam com o trabalho que está sendo realizado!
