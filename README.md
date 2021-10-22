@@ -1,4 +1,4 @@
-![logo](/app/resources/logo/logo_normal.png)
+![logo](/resources/logo/logo_normal.png)
 
 # dev-outside-net
 
