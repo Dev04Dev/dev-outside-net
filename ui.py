@@ -285,8 +285,6 @@ class MainWindow(QMainWindow):
                 
         self.div = QSplitter(Qt.Horizontal, self)
         
-        self.side_left = SideLeft(self)
-        
         self.index = Index(self)
         self.index.setFocus()
         
@@ -294,6 +292,9 @@ class MainWindow(QMainWindow):
         self.notebook.setMovable(True)
         self.notebook.setTabsClosable(True)
         self.notebook.setDocumentMode(True)
+        self.notebook.setMinimumWidth(300)
+        
+        self.side_left = SideLeft(self)
         
         self.div.addWidget(self.side_left)
         self.div.addWidget(self.index)
