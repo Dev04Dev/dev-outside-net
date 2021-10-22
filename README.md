@@ -28,6 +28,11 @@
 
 ## ScreenShots:
 
+![screen1](/resources/assets/screen1.png)
+![screen2](/resources/assets/screen2.png)
+![screen3](/resources/assets/screen3.png)
+![screen4](/resources/assets/screen4.png)
+
 ---
 
 ## Technical specifications:
