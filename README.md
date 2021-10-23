@@ -2,7 +2,7 @@
 
 # dev-outside-net
 
-> Projecto criado para ajudar programadores iniciantes a estudar, apesar da falta de internet!
+> É uma aplicação desktop, criada para ajudar programadores iniciantes a estudar apesar da falta de internet, as vezes a falta de motivação faz com que iniciantes abandonem a programação por causa de algumas dificuldades, uma das maiores é a *Internet*! O objectivo deste projecto é justamente ajudar iniciantes a achar as respostas para perguntas mais básicas sobre programação, para que possam ter uma boa base e motivação para continuar a estudar por conta própria! 
 
 ## Features:
 
@@ -12,8 +12,6 @@
 
 - Tema, palette(Qt), fonte, e tema de ícones configuráveis via json (data/launch.json)
   
-  *Mais por vir...*
-
 ### Exemplo:
 
 ```json
@@ -23,6 +21,8 @@
 "qt-palette":"dark"
 }
 ```
+
+*Mais por vir...*
 
 ---
 
@@ -49,30 +49,28 @@
   
   *Veja outras dependências em*:
   
-  - *app/requirements.txt*
+  - *./requirements.txt*
   
-  - *app/frameworks*
+  - */frameworks*
 
 ## Contribute:
 
-> Que bom que pensou nisso, estou trabalhando em um guia para quem quiser contribuir, pois para isso funcionar será necessário escritores dos artigos que serão adicionados a aplicação, que nem um "blog"!
-> 
-> mas enquanto isso você pode:
+> Estou trabalhando em um guia para aqueles que quiserem contribuir! Mas enquanto isso, poderá:
 
 1. Clonar este repositório, realizar testes e encontrar problemas!
-> Use:
-  `git clone https://github.com/Dev04Dev/dev-outside-net.git`
+
+` git clone https://github.com/Dev04Dev/dev-outside-net.git `
+
 2. Caso encontre algum problema ou note algum comportamento estranho na aplicação por favor crie uma *issue* (caso ainda não exista), e relate o problema!
 
 3. Deixar uma estrela neste *repo*, pois dá mais motivação ver que as pessoas se importam com o trabalho que está sendo realizado!
 
 4. Partilhar essa ideia com outros!
 
-5. Visitar a nossa página no Facebook:
+5. Visitar as nossas redes sociais:
    
-   [Dev4Dev](https://www.facebook.com/projectdev4dev)
-   
-   *onde postamos conteúdo de programação, aproveitando que o **Facebook** pode ser usado gratuitamente por um determinado tempo após o carregamento de saldo!*
+   [![Dev4Dev](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/projectdev4dev)
+   [![Dev4Dev](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.facebook.com/projectdev4dev)
 
 ## State:
 
@@ -80,7 +78,7 @@
 
 ## DONE:
 
-- [x] Interface de usuário criada
+- [x] Interface de usuário
 
 - [x] Funcionalidades básicas (Pesquisar; Abrir os Resultados; Selecionar Tópicos)
 
@@ -96,7 +94,7 @@
 
 - [ ] Atualizar o estado(configurações, dados) da aplicação em tempo real!
 
-## ## Contacts:
+## Contacts:
 
 [projectdev4dev@gmail.com](mailto:projectdev4dev@gmail.com)
 
@@ -106,6 +104,5 @@
   
   [ExCo/functions.py at master · matkuki/ExCo · GitHub](https://github.com/matkuki/ExCo/blob/master/functions.py)
 
-#### Não quero escrever tudo, pois a aplicação está em fase de desenvolvimento, por isso vou apenas dizer que:
 
 *This Readme is under construction*
