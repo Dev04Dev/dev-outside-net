@@ -37,11 +37,14 @@ class App(QObject):
         super().__init__()
         
         self.thread=QThread()
+        print(self.thread.isRunning())
         self.engine=SearchEngine(self)
         self.engine.on_results.connect(self.display_results)
         self.engine.moveToThread(self.thread)
-        self.thread.start()
         self.thread.started.connect(self.run)
+        print(self.thread.isRunning())
+        self.thread.start()
+        print(self.thread.isRunning())
         
         self.content_api = data.ContentManager()
         self.base_path = f"{data.BASE_PATH}{data.SYS_SEP}content{data.SYS_SEP}"
@@ -133,7 +136,10 @@ class App(QObject):
     
     def search_topic(self):
         query = self.search.input.text()
-        self.on_searched.emit(query, self.base_path)
+        if self.thread.isRunning():
+            self.on_searched.emit(query, self.base_path)
+        else:
+            self.thread.start()
     
     def display_results(self, res):
         rows = []
